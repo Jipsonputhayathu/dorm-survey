@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Accommodation Survey – Hannover</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2.5rem 1rem 4rem;
+      color: #1a1a18;
+    }
+    .container { max-width: 580px; width: 100%; }
+    .header { margin-bottom: 2rem; }
+    .intro-card {
+      background: linear-gradient(135deg, #1a3a5c 0%, #185FA5 100%);
+      border-radius: 16px;
+      padding: 2rem 1.75rem 1.75rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .intro-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .intro-card::after {
+      content: '';
+      position: absolute;
+      bottom: -50px; left: 30px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .intro-icon {
+      font-size: 36px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .intro-card h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .intro-card .intro-body {
+      font-size: 14px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .intro-card .intro-body strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .notice-bar {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.95);
+      font-weight: 500;
+    }
+    .notice-bar .notice-icon { font-size: 15px; flex-shrink: 0; }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #185FA5;
+      background: #E6F1FB;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .section-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #888;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .header h1 { font-size: 22px; font-weight: 500; margin-bottom: 8px; }
+    .header p { font-size: 14px; color: #5a5a57; line-height: 1.6; }
+    .search-wrap { margin-bottom: 1.25rem; }
+    .search-wrap input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1px solid #d8d7d0;
+      border-radius: 10px;
+      background: #fff;
+      color: #1a1a18;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-wrap input:focus { border-color: #185FA5; }
+    .dorm-list { display: flex; flex-direction: column; gap: 8px; }
+    .dorm-card {
+      background: #fff;
+      border: 1px solid #e0dfd8;
+      border-radius: 12px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .dorm-card:hover { border-color: #aaa; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .dorm-card.hidden { display: none; }
+    .dorm-info { display: flex; align-items: center; gap: 12px; }
+    .dorm-num {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: #E6F1FB;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; color: #185FA5;
+      flex-shrink: 0;
+    }
+    .dorm-name { font-size: 14px; font-weight: 500; line-height: 1.3; }
+    .dorm-addr { font-size: 12px; color: #888; margin-top: 2px; }
+    .arrow { font-size: 18px; color: #bbb; flex-shrink: 0; }
+    .no-results { text-align: center; padding: 2rem; font-size: 14px; color: #999; display: none; }
+    .footer { margin-top: 2rem; font-size: 12px; color: #aaa; text-align: center; line-height: 1.6; }
+    .modal-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      align-items: center; justify-content: center;
+      z-index: 100; padding: 1rem;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 14px;
+      padding: 1.5rem; max-width: 400px; width: 100%;
+      border: 1px solid #e0dfd8;
+    }
+    .modal h2 { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+    .modal p { font-size: 13px; color: #5a5a57; margin-bottom: 1.5rem; line-height: 1.6; }
+    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel {
+      font-size: 13px; padding: 8px 16px;
+      border: 1px solid #d0cfc8; border-radius: 8px;
+      background: transparent; cursor: pointer; color: #5a5a57;
+    }
+    .btn-cancel:hover { background: #f5f4f0; }
+    .btn-go {
+      font-size: 13px; padding: 8px 16px;
+      border: 1px solid #185FA5; border-radius: 8px;
+      background: #E6F1FB; cursor: pointer;
+      color: #185FA5; font-weight: 500;
+    }
+    .btn-go:hover { background: #d0e4f5; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="intro-card">
+      <span class="intro-icon">🏠</span>
+      <h1>Help improve student housing in Hannover</h1>
+      <p class="intro-body">
+        This study examines the <strong>real problems students face</strong> in their accommodation — from maintenance issues to internet quality, noise, safety, and more.<br><br>
+        Your experience matters. By taking this short survey, you directly contribute to <strong>academic research</strong> that can lead to better living conditions for you and every student who comes after you.
+      </p>
+      <div class="notice-bar">
+        <span class="notice-icon">⚠️</span>
+        Please answer all questions — do not skip any. Every response makes the data more reliable.
+      </div>
+    </div>
+    <div class="tag">Master thesis · LUH Hannover · Anonymous &amp; confidential</div>
+  </div>
+  <div class="section-label">Select your dormitory</div>
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Search by name or address..." oninput="filterDorms()" />
+  </div>
+  <div class="dorm-list" id="dormList"></div>
+  <div class="no-results" id="noResults">No dorm found. Try a different search term.</div>
+  <div class="footer">
+    This survey is part of a master thesis at Leibniz University Hannover.<br>
+    Your responses are completely anonymous and confidential.
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">Starting survey</h2>
+    <p id="modalDesc">You will be taken to the survey for your dormitory.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Go back</button>
+      <button class="btn-go" onclick="goToSurvey()">Start survey →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var dorms = [
+  { num:1,  name:"Marie-Curie-Straße 1-3",           address:"30823 Garbsen",                                    url:"https://survey.uni-hannover.de/index.php/553635?lang=en" },
+  { num:2,  name:"Jägerstraße dorms",                 address:"Morwegsgasse 27 (Haus A+B) / Lodyweg 2 (Haus C), 30167 Hannover", url:"https://survey.uni-hannover.de/index.php/513246?lang=en" },
+  { num:3,  name:"Dorotheenstraße 5A/5B",             address:"30159 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/999392?lang=en" },
+  { num:4,  name:"Bischofsholer Damm",                address:"30173 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/375925?lang=en" },
+  { num:5,  name:"Am Papehof",                        address:"30459 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/535718?lang=en" },
+  { num:6,  name:"Heidjerhof",                        address:"30625 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/821481?lang=en" },
+  { num:7,  name:"Karl-Wiechert-Allee",               address:"30625 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/384322?lang=en" },
+  { num:8,  name:"Callinstraße 18",                   address:"30167 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/139669?lang=en" },
+  { num:9,  name:"Ritter-Brüning-Straße",             address:"30459 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/284713?lang=en" },
+  { num:10, name:"Schneiderberg",                     address:"30167 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/171615?lang=en" },
+  { num:11, name:"Haus am Berggarten",                address:"Haltenhoffstraße, 30167 Hannover",                 url:"https://survey.uni-hannover.de/index.php/355685?lang=en" },
+  { num:12, name:"Internationales Quartier",          address:"Dorotheenstraße, 30159 Hannover",                  url:"https://survey.uni-hannover.de/index.php/629127?lang=en" },
+  { num:13, name:"Dorotheenstraße 7",                 address:"30159 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/641962?lang=en" },
+  { num:14, name:"Hufelandstraße (dorm 14)",          address:"Hannover",                                         url:"https://survey.uni-hannover.de/index.php/795245?lang=en" },
+  { num:15, name:"Nobelring",                         address:"30627 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/263329?lang=en" },
+  { num:16, name:"Callinstraße 25",                   address:"30167 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/221446?lang=en" },
+  { num:17, name:"Klaus Bahlsen / Wilhelm-Busch-Str.",address:"30167 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/464582?lang=en" },
+  { num:18, name:"Am Georgengarten",                  address:"30167 Hannover",                                   url:"https://survey.uni-hannover.de/index.php/272577?lang=en" },
+  { num:19, name:"Emdenstraße",                       address:"Hannover",                                         url:"https://survey.uni-hannover.de/index.php/212885?lang=en" },
+  { num:20, name:"Hufelandstraße (dorm 20)",          address:"Hannover",                                         url:"https://survey.uni-hannover.de/index.php/795245?lang=en" }
+];
+
+var currentUrl = "";
+var list = document.getElementById("dormList");
+
+dorms.forEach(function(d) {
+  var card = document.createElement("div");
+  card.className = "dorm-card";
+  card.dataset.search = (d.name + " " + d.address).toLowerCase();
+  card.innerHTML =
+    '<div class="dorm-info">' +
+      '<div class="dorm-num">' + d.num + '</div>' +
+      '<div>' +
+        '<div class="dorm-name">' + d.name + '</div>' +
+        '<div class="dorm-addr">' + d.address + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<span class="arrow">›</span>';
+  card.addEventListener("click", function() { openModal(d); });
+  list.appendChild(card);
+});
+
+function filterDorms() {
+  var q = document.getElementById("search").value.toLowerCase();
+  var cards = list.querySelectorAll(".dorm-card");
+  var visible = 0;
+  cards.forEach(function(c) {
+    if (c.dataset.search.indexOf(q) !== -1) { c.classList.remove("hidden"); visible++; }
+    else { c.classList.add("hidden"); }
+  });
+  document.getElementById("noResults").style.display = visible === 0 ? "block" : "none";
+}
+
+function openModal(d) {
+  currentUrl = d.url;
+  document.getElementById("modalTitle").textContent = d.name;
+  document.getElementById("modalDesc").textContent =
+    "You are about to start the survey for residents of " + d.name + " (" + d.address + "). It takes about 5–10 minutes. Your answers are fully anonymous.";
+  document.getElementById("modal").classList.add("open");
+}
+
+function closeModal() { document.getElementById("modal").classList.remove("open"); }
+
+function goToSurvey() { var u = currentUrl; closeModal(); window.location.href = u; }
+</script>
+</body>
+</html>
